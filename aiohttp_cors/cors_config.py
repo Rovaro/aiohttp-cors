@@ -188,11 +188,14 @@ class _CorsConfigImpl(_PreflightHandler):
                 ",".join(options.expose_headers)
 
         # Process according to CORS 6.1.3.
-        # Set allowed origin.
-        response.headers[hdrs.ACCESS_CONTROL_ALLOW_ORIGIN] = origin
-        if options.allow_credentials:
+        if options.allow_credentials and origin != "*":
+            # Set allowed origin.
+            response.headers[hdrs.ACCESS_CONTROL_ALLOW_ORIGIN] = origin
             # Set allowed credentials.
             response.headers[hdrs.ACCESS_CONTROL_ALLOW_CREDENTIALS] = _TRUE
+        else:
+            # Set allowed origin.
+            response.headers[hdrs.ACCESS_CONTROL_ALLOW_ORIGIN] = "*"
 
     async def _get_config(self, request, origin, request_method):
         config = \
