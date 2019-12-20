@@ -163,10 +163,10 @@ class _CorsConfigImpl(_PreflightHandler):
             # Terminate CORS according to CORS 6.1.1.
             return
 
-        from_wilcard = False
+        from_wildcard = False
         options = config.get(origin)
         if options is None:
-            options, from_wilcard = config.get("*"), True
+            options, from_wildcard = config.get("*"), True
             if options is None:
                 # Terminate CORS according to CORS 6.1.2.
                 return
@@ -191,14 +191,16 @@ class _CorsConfigImpl(_PreflightHandler):
                 ",".join(options.expose_headers)
 
         # Process according to CORS 6.1.3.
-        if options.allow_credentials and not from_wilcard:
-            # Set allowed origin.
-            response.headers[hdrs.ACCESS_CONTROL_ALLOW_ORIGIN] = origin
-            # Set allowed credentials.
-            response.headers[hdrs.ACCESS_CONTROL_ALLOW_CREDENTIALS] = _TRUE
-        else:
+        if from_wildcard:
             # Set allowed origin.
             response.headers[hdrs.ACCESS_CONTROL_ALLOW_ORIGIN] = "*"
+        else:
+            # Set allowed origin.
+            response.headers[hdrs.ACCESS_CONTROL_ALLOW_ORIGIN] = origin
+
+            if options.allow_credentials:
+                # Set allowed credentials.
+                response.headers[hdrs.ACCESS_CONTROL_ALLOW_CREDENTIALS] = _TRUE
 
     async def _get_config(self, request, origin, request_method):
         config = \
