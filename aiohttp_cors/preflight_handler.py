@@ -104,10 +104,14 @@ class _PreflightHandler:
         response = web.Response()
 
         # CORS 6.2.7
-        response.headers[hdrs.ACCESS_CONTROL_ALLOW_ORIGIN] = origin
-        if options.allow_credentials:
+        if options.allow_credentials and origin != "*":
+            # Set allowed origin.
+            response.headers[hdrs.ACCESS_CONTROL_ALLOW_ORIGIN] = origin
             # Set allowed credentials.
             response.headers[hdrs.ACCESS_CONTROL_ALLOW_CREDENTIALS] = _TRUE
+        else:
+            # Set allowed origin.
+            response.headers[hdrs.ACCESS_CONTROL_ALLOW_ORIGIN] = "*"
 
         # CORS 6.2.8
         if options.max_age is not None:
